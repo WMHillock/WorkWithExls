@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 public class MyExtraMethods {
+
     public static List sortAbiturientsList(List<Abiturient> abiturientList) {
         return abiturientList.stream()
                 .sorted((a, b) -> Double.compare(b.getGrades(), a.getGrades()))
@@ -9,7 +10,7 @@ public class MyExtraMethods {
     }
     public static List collectAbiturientsToProfMainWay(List<Abiturient> abiturientList, Profession professions) {
         return abiturientList.stream()
-                .filter((a) -> a.getFaculty1().contains(professions.getProfessionCode()))
+                .filter((a) -> a.getFaculty1().equals(professions))
                 .limit(professions.getPlaceLimit())
                 .collect(Collectors.toList());
     }
@@ -24,11 +25,10 @@ public class MyExtraMethods {
         for (Profession myProfessions : myProfession) {
             workList.add(MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, myProfessions));
         }
-        workList.add(new ArrayList<>()); //индекс 11 - промежуточные результаты
-        workList.add(new ArrayList<>()); //индекс 12 - отсев
+        workList.add(new ArrayList<>()); //индекс 11 - отсев
 
         for (int i = 0; i < sortedAbiturientList.size(); i++) {
-            System.out.println(sortedAbiturientList.get(i));
+            sortedAbiturientList.get(i);
         }
 
     }

@@ -60,34 +60,44 @@ public class XlsxHandler {
         return j;
     }
 
+    public static Profession adapterForProfession(String string) {
+        Profession[] professions = Profession.values();
+        for (Profession profession : professions) {
+            if (string.contains(profession.getProfessionCode())) {
+                return profession;
+            }
+        }
+        return null;
+    }
+
     //TODO Нам нужен ObjectMapper?
-    public static List<Abiturient> parseToAbiturient( List<ArrayList<String>> parsedFromXlsInfoList) {
+    public static List<Abiturient> parseToAbiturient(List<ArrayList<String>> abiturientsFromSheet) {
         List<Abiturient> abiturientList = new ArrayList<>();
-        for (int i = 0; i < parsedFromXlsInfoList.size(); i++) {
+        for (int i = 0; i < abiturientsFromSheet.size(); i++) {
             abiturientList.add(new Abiturient());
-            abiturientList.get(i).setName(parsedFromXlsInfoList.get(i).get(0));
-            abiturientList.get(i).setFaculty1(parsedFromXlsInfoList.get(i).get(1));
+            abiturientList.get(i).setName(abiturientsFromSheet.get(i).get(0));
+            abiturientList.get(i).setFaculty1(adapterForProfession(abiturientsFromSheet.get(i).get(1)));
 
-            if (parsedFromXlsInfoList.get(i).get(parsedFromXlsInfoList.get(i).size() - 1).equals("1.0")) {
-                abiturientList.get(i).setGrades(Double.parseDouble(parsedFromXlsInfoList.get(i)
-                        .get(parsedFromXlsInfoList.get(i).size() - 2)));
-                abiturientList.get(i).setFactor13(parsedFromXlsInfoList.get(i)
-                        .get(parsedFromXlsInfoList.get(i).size() - 1));
+            if (abiturientsFromSheet.get(i).get(abiturientsFromSheet.get(i).size() - 1).equals("1.0")) {
+                abiturientList.get(i).setGrades(Double.parseDouble(abiturientsFromSheet.get(i)
+                        .get(abiturientsFromSheet.get(i).size() - 2)));
+                abiturientList.get(i).setFactor13(abiturientsFromSheet.get(i)
+                        .get(abiturientsFromSheet.get(i).size() - 1));
 
-                if (parsedFromXlsInfoList.get(i).size() > 4) {
-                    abiturientList.get(i).setFaculty2(parsedFromXlsInfoList.get(i).get(2));
-                    if (parsedFromXlsInfoList.get(i).size() > 5) {
-                        abiturientList.get(i).setFaculty3(parsedFromXlsInfoList.get(i).get(3));
+                if (abiturientsFromSheet.get(i).size() > 4) {
+                    abiturientList.get(i).setFaculty2(adapterForProfession(abiturientsFromSheet.get(i).get(2)));
+                    if (abiturientsFromSheet.get(i).size() > 5) {
+                        abiturientList.get(i).setFaculty3(adapterForProfession(abiturientsFromSheet.get(i).get(3)));
                     }
                 }
             } else {
-                abiturientList.get(i).setGrades(Double.parseDouble(parsedFromXlsInfoList.get(i)
-                        .get(parsedFromXlsInfoList.get(i).size() - 1)));
+                abiturientList.get(i).setGrades(Double.parseDouble(abiturientsFromSheet.get(i)
+                        .get(abiturientsFromSheet.get(i).size() - 1)));
 
-                if (parsedFromXlsInfoList.get(i).size() > 3) {
-                    abiturientList.get(i).setFaculty2(parsedFromXlsInfoList.get(i).get(2));
-                    if (parsedFromXlsInfoList.get(i).size() > 4) {
-                        abiturientList.get(i).setFaculty3(parsedFromXlsInfoList.get(i).get(3));
+                if (abiturientsFromSheet.get(i).size() > 3) {
+                    abiturientList.get(i).setFaculty2(adapterForProfession(abiturientsFromSheet.get(i).get(2)));
+                    if (abiturientsFromSheet.get(i).size() > 4) {
+                        abiturientList.get(i).setFaculty3(adapterForProfession(abiturientsFromSheet.get(i).get(3)));
                     }
                 }
             }

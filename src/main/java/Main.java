@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        //TODO переделать Класс Abiturient
+        //TODO Главное! Переехать на DEQUE!
         //TODO почистить код от лишнего и оптимизировать методы
         //TODO доделать логику распределения
         //TODO переименовать нормально все переменные
@@ -66,45 +66,51 @@ public class Main {
         //Создаем объект представляющий страницу из нашего book
         Sheet sheet = book.getSheetAt(1);
 
+        /*
+        Создаем сортированный список абитуриентов по баллу
+        тут аж 3 этапа:
+        1) чтение в лист
+        2) переведение в объекты
+        3) сортировака результата
+         */
         List<Abiturient> sortedAbiturientList = MyExtraMethods.sortAbiturientsList(
                 XlsxHandler.parseToAbiturient(XlsxHandler.readToList(sheet)));
 
-        //Проверка парсинга по количеству правильных имен
+        //Делаем сверку о количесту непустых имен
         System.out.println(sortedAbiturientList.stream()
-                .filter((a) -> a.getName() != "")
+                .filter((a) -> !a.getName().isBlank())
                 .count());
 
         mainLoop(sortedAbiturientList);
 
-
+        //Это цикл первичной сортировки людей по группам, тоже для проверки
 //        Profession[] myEnums = Profession.values();
 //        for( Profession numsE : myEnums) {
 //            List<Abiturient> filtredAbiturientList =
 //            MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, numsE);
-//            System.out.println(numsE + " \n" + filtredAbiturientList.toString());
+//            System.out.println(numsE.getFullName() + " - "
+//                    + numsE.getProfessionCode() + " \n"
+//                    + filtredAbiturientList.toString());
 //        }
 
-//        List<Abiturient> filtredAbiturientList =
-//                MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, Profession.TECHMECH);
-//        System.out.println(filtredAbiturientList.toString());
+//        System.out.println(MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, Profession.TECHMECH));
     }
 
     public static void mainLoop(List<Abiturient> sortedAbiturientList) {
-
 
         mainLoops:
         {
             while (true) {
                 //TODO Основная логика распределения людей, возможно надо все переделать в PriorityQueue
                 System.out.println("Выберите действие: " + "\n"
-                        + "1 - Просмотреть текущие списки" + "\n"
+                        + "1 - Просмотреть общий список (отсортирован по рейтингу)" + "\n"
                         + "2 - Провести распределение" + "\n"
                         + "3 - Выгрузить данные в файл" + "\n"
                         + "4 - Завершить работу" + "\n");
 
                 switch (SCANNER.nextInt()) {
                     case 1: {
-                    //TODO просмотр списков
+                        System.out.println(sortedAbiturientList.toString());
                     }
                     break;
 

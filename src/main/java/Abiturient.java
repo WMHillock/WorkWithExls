@@ -1,10 +1,9 @@
 import java.util.Objects;
 public class Abiturient {
     private String name = "";
-    //TODO Переделать поле факультет со String на Profession
-    private String faculty1 = "";
-    private String faculty2 = "";
-    private String faculty3 = "";
+    private Profession faculty1;
+    private Profession faculty2;
+    private Profession faculty3;
     private double grades = 0.0;
     private String factor13 = "";
     public static int usersCount = 0;
@@ -16,32 +15,32 @@ public class Abiturient {
         this.name = name;
     }
 
-    public String getFaculty1() {
+    public Profession getFaculty1() {
         return faculty1;
     }
-    public void setFaculty1(String faculty1) {
+    public void setFaculty1(Profession faculty1) {
         this.faculty1 = faculty1;
     }
 
-    public String getFaculty2() {
+    public Profession getFaculty2() {
         return faculty2;
     }
-    public void setFaculty2(String faculty2) {
+    public void setFaculty2(Profession faculty2) {
         this.faculty2 = faculty2;
     }
 
-    public String getFaculty3() {
+    public Profession getFaculty3() {
         return faculty3;
     }
+    public void setFaculty3(Profession faculty3) {
+        this.faculty3 = faculty3;
+    }
+
     public double getGrades() {
         return grades;
     }
-
     public void setGrades(double grades) {
         this.grades = grades;
-    }
-    public void setFaculty3(String faculty3) {
-        this.faculty3 = faculty3;
     }
 
     public String getFactor13() {
@@ -79,9 +78,9 @@ public class Abiturient {
         StringBuilder str = new StringBuilder();
         str.append("***" + "\n" + getName() + " (" + getGrades() + ") -> \n"
                 + "Основное направление - " + getFaculty1() + "\n");
-        if (!getFaculty2().isBlank()) {
+        if (getFaculty2() != null) {
             str.append("Дополнительное направление 1 - " + getFaculty2() + "\n");
-            if (!getFaculty3().isBlank()) {
+            if (getFaculty3() != null) {
                 str.append("Дополнительное направление 2 - " + getFaculty3() + "\n");
             }
         }

@@ -44,7 +44,6 @@ public enum Profession {
             , "49.02.01"
             , 25); //10
 
-
     private final String fullName;
     private final String professionCode;
     private final int placeLimit;
