@@ -1,0 +1,99 @@
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class XlsxHandler {
+
+    public static List readToList(Sheet sheet) {
+        List<ArrayList<String>> parsedFromXlsInfoList = new ArrayList<>();
+        int i = 0;
+        // for each цикл заполнения нашего хранилища parsedFromXlsInfoList
+        //Проходим по очереди по рядам
+        for (Row row : sheet) {
+            //Создаем многомерный ArrayList
+            parsedFromXlsInfoList.add(i, new ArrayList<>());
+            //Проходим по ячейкам
+            for (Cell cell : row) {
+                //Осуществляем отрезание пустых значений
+                //Забираем даннче из ячеек, обязательно своим методом для каждого типа!
+                switch (cell.getCellType()) {
+                    case STRING:
+                        parsedFromXlsInfoList.get(i).add(cell.getRichStringCellValue().getString());
+                        break;
+                    case NUMERIC:
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            parsedFromXlsInfoList.get(i).add(cell.getDateCellValue() + "");
+                        } else {
+                            parsedFromXlsInfoList.get(i).add(cell.getNumericCellValue() + "");
+                        }
+                        break;
+                    case BOOLEAN:
+                        parsedFromXlsInfoList.get(i).add(cell.getBooleanCellValue() + "");
+                        break;
+                    case FORMULA:
+                        parsedFromXlsInfoList.get(i).add(cell.getCellFormula() + "");
+                        break;
+                    default:
+                        parsedFromXlsInfoList.get(i).add(" ");
+                }
+            }
+            i++;
+        }
+        List<ArrayList> parsedAbiturientsListCorrected = parsedFromXlsInfoList.stream()
+                .limit(elementsCounter(parsedFromXlsInfoList))
+                .collect(Collectors.toList());
+
+        return parsedAbiturientsListCorrected;
+    }
+    public static int elementsCounter(List<ArrayList<String>> parsedFromXlsInfoList) {
+        int j = 0;
+        for (int i = 0; i < parsedFromXlsInfoList.size(); i++) {
+            if (!parsedFromXlsInfoList.get(i).get(0).isBlank()) {
+                j++;
+            }
+        }
+        return j;
+    }
+
+    //TODO Нам нужен ObjectMapper?
+    public static List<Abiturient> parseToAbiturient( List<ArrayList<String>> parsedFromXlsInfoList) {
+        List<Abiturient> abiturientList = new ArrayList<>();
+        for (int i = 0; i < parsedFromXlsInfoList.size(); i++) {
+            abiturientList.add(new Abiturient());
+            abiturientList.get(i).setName(parsedFromXlsInfoList.get(i).get(0));
+            abiturientList.get(i).setFaculty1(parsedFromXlsInfoList.get(i).get(1));
+
+            if (parsedFromXlsInfoList.get(i).get(parsedFromXlsInfoList.get(i).size() - 1).equals("1.0")) {
+                abiturientList.get(i).setGrades(Double.parseDouble(parsedFromXlsInfoList.get(i)
+                        .get(parsedFromXlsInfoList.get(i).size() - 2)));
+                abiturientList.get(i).setFactor13(parsedFromXlsInfoList.get(i)
+                        .get(parsedFromXlsInfoList.get(i).size() - 1));
+
+                if (parsedFromXlsInfoList.get(i).size() > 4) {
+                    abiturientList.get(i).setFaculty2(parsedFromXlsInfoList.get(i).get(2));
+                    if (parsedFromXlsInfoList.get(i).size() > 5) {
+                        abiturientList.get(i).setFaculty3(parsedFromXlsInfoList.get(i).get(3));
+                    }
+                }
+            } else {
+                abiturientList.get(i).setGrades(Double.parseDouble(parsedFromXlsInfoList.get(i)
+                        .get(parsedFromXlsInfoList.get(i).size() - 1)));
+
+                if (parsedFromXlsInfoList.get(i).size() > 3) {
+                    abiturientList.get(i).setFaculty2(parsedFromXlsInfoList.get(i).get(2));
+                    if (parsedFromXlsInfoList.get(i).size() > 4) {
+                        abiturientList.get(i).setFaculty3(parsedFromXlsInfoList.get(i).get(3));
+                    }
+                }
+            }
+        }
+        return abiturientList;
+    }
+
+    public static void uploadDataToXlsFile() {}
+}
