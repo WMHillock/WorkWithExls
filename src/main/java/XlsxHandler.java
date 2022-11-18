@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,7 @@ public class XlsxHandler {
 
     //TODO Нам нужен ObjectMapper?
     public static List<Abiturient> parseToAbiturient(List<ArrayList<String>> abiturientsFromSheet) {
-        List<Abiturient> abiturientList = new ArrayList<>();
+        List<Abiturient> abiturientList = new LinkedList<>();
         for (int i = 0; i < abiturientsFromSheet.size(); i++) {
             abiturientList.add(new Abiturient());
             abiturientList.get(i).setName(abiturientsFromSheet.get(i).get(0));
@@ -105,5 +106,8 @@ public class XlsxHandler {
         return abiturientList;
     }
 
-    public static void uploadDataToXlsFile() {}
+    public static void uploadDataToXlsFile() {
+        //TODO процесс сохранения данных в файл
+        System.out.println("Мы слили в файл инфу!");
+    }
 }

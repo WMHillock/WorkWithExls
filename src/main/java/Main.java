@@ -4,20 +4,18 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
     public static final Scanner SCANNER = new Scanner(System.in);
-
     public static void main(String[] args) throws IOException {
 
-        //TODO Главное! Переехать на DEQUE!
-        //TODO почистить код от лишнего и оптимизировать методы
+        //TODO почистить код от лишнего и оптимизировать методы + 50%
         //TODO доделать логику распределения
-        //TODO переименовать нормально все переменные
+        //TODO переименовать нормально все переменные + 50%
         //TODO сделать прием абитуриентов в JSON формате
-
         /*
         Работа логики программы:
         1) Мы загружаем Xlsx файл
@@ -67,43 +65,38 @@ public class Main {
         Sheet sheet = book.getSheetAt(1);
 
         /*
-        Создаем сортированный список абитуриентов по баллу
-        тут аж 3 этапа:
-        1) чтение в лист
-        2) переведение в объекты
-        3) сортировака результата
+        Это наши 3 метода в одном, читаем, пишем в объекты, сортируем по баллу
          */
-        List<Abiturient> sortedAbiturientList = MyExtraMethods.sortAbiturientsList(
-                XlsxHandler.parseToAbiturient(XlsxHandler.readToList(sheet)));
+        Deque<Abiturient> sortedAbiturientList = new LinkedList<>(MyExtraMethods.sortAbiturientsDeque(
+                XlsxHandler.parseToAbiturient(XlsxHandler.readToList(sheet))));
 
-        //Делаем сверку о количесту непустых имен
-        System.out.println(sortedAbiturientList.stream()
+        //Проверка парсинга по количеству правильных имен
+        System.out.println("Загружено - " + sortedAbiturientList.stream()
                 .filter((a) -> !a.getName().isBlank())
-                .count());
+                .count() + " абитуриентов.\n");
 
         mainLoop(sortedAbiturientList);
 
-        //Это цикл первичной сортировки людей по группам, тоже для проверки
 //        Profession[] myEnums = Profession.values();
 //        for( Profession numsE : myEnums) {
 //            List<Abiturient> filtredAbiturientList =
 //            MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, numsE);
-//            System.out.println(numsE.getFullName() + " - "
-//                    + numsE.getProfessionCode() + " \n"
-//                    + filtredAbiturientList.toString());
+//            System.out.println(numsE + " \n" + filtredAbiturientList.toString());
 //        }
 
-//        System.out.println(MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, Profession.TECHMECH));
+//        List<Abiturient> filtredAbiturientList =
+//                MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, Profession.TECHMECH);
+//        System.out.println(filtredAbiturientList.toString());
     }
 
-    public static void mainLoop(List<Abiturient> sortedAbiturientList) {
+    public static void mainLoop(Deque<Abiturient> sortedAbiturientList) {
 
-        mainLoops:
+        mainLoop:
         {
             while (true) {
-                //TODO Основная логика распределения людей, возможно надо все переделать в PriorityQueue
+                //TODO Менюшка
                 System.out.println("Выберите действие: " + "\n"
-                        + "1 - Просмотреть общий список (отсортирован по рейтингу)" + "\n"
+                        + "1 - Просмотреть текущие списки" + "\n"
                         + "2 - Провести распределение" + "\n"
                         + "3 - Выгрузить данные в файл" + "\n"
                         + "4 - Завершить работу" + "\n");
@@ -115,7 +108,6 @@ public class Main {
                     break;
 
                     case 2: {
-                        //System.out.println(MyExtraMethods.distributionOfAbiturients(workList));
                         MyExtraMethods.distributionOfAbiturients(sortedAbiturientList);
                     }
                     break;
@@ -127,10 +119,10 @@ public class Main {
 
                     case 4: {
                         SCANNER.close();
-                        break mainLoops;
+                        break mainLoop;
                     }
                     default:
-                        System.out.println("SMTH gonna wrong! Reenter you choise");
+                        System.out.println("SMTH gonna wrong! Reenter you choose");
                     break;
                 }
             }
