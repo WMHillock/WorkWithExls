@@ -1,43 +1,28 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 public class Abiturient {
     private String name = "";
-    private Profession faculty1;
-    private Profession faculty2;
-    private Profession faculty3;
+    private List<Profession> myProfessions = new ArrayList<>(Arrays.asList(null, null, null));
     private double grades = 0.0;
     private String factor13 = "";
     public static int usersCount = 0;
     //TODO Переделать Abiturient.class с профессиями в списке а не по одной
-    private List<Profession> myFacultets = new ArrayList<>(3);
+
+    public Profession getMyProfessions(int indexOfProfession) {
+        return myProfessions.get(indexOfProfession);
+    }
+
+    public void setMyProfessions(int indexOfProfession, Profession profession) {
+        this.myProfessions.set(indexOfProfession, profession);
+    }
 
     public String getName() {
         return name;
     }
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Profession getFaculty1() {
-        return faculty1;
-    }
-    public void setFaculty1(Profession faculty1) {
-        this.faculty1 = faculty1;
-    }
-
-    public Profession getFaculty2() {
-        return faculty2;
-    }
-    public void setFaculty2(Profession faculty2) {
-        this.faculty2 = faculty2;
-    }
-
-    public Profession getFaculty3() {
-        return faculty3;
-    }
-    public void setFaculty3(Profession faculty3) {
-        this.faculty3 = faculty3;
     }
 
     public double getGrades() {
@@ -54,9 +39,7 @@ public class Abiturient {
         this.factor13 = factor13;
     }
 
-    public Abiturient() {
-        usersCount++;
-    }
+    public Abiturient() { usersCount++; }
 
     @Override
     public boolean equals(Object o) {
@@ -65,28 +48,26 @@ public class Abiturient {
         Abiturient that = (Abiturient) o;
         return Double.compare(that.grades, grades) == 0
                 && Objects.equals(name, that.name)
-                && Objects.equals(faculty1, that.faculty1)
-                && Objects.equals(faculty2, that.faculty2)
-                && Objects.equals(faculty3, that.faculty3)
+                && Objects.equals(myProfessions.get(0), that.myProfessions.get(0))
+                && Objects.equals(myProfessions.get(1), that.myProfessions.get(1))
+                && Objects.equals(myProfessions.get(2), that.myProfessions.get(2))
                 && Objects.equals(factor13, that.factor13);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, faculty1, grades, faculty2, faculty3, factor13);
+        return Objects.hash(name, grades, myProfessions.get(0), myProfessions.get(1), myProfessions.get(2), factor13);
     }
 
     @Override
     public String toString() {
 
         StringBuilder str = new StringBuilder();
-        str.append("***" + "\n" + getName() + " (" + getGrades() + ") -> \n"
-                + "Основное направление - " + getFaculty1() + "\n");
-        if (getFaculty2() != null) {
-            str.append("Дополнительное направление 1 - " + getFaculty2() + "\n");
-            if (getFaculty3() != null) {
-                str.append("Дополнительное направление 2 - " + getFaculty3() + "\n");
-            }
+        str.append("***" + "\n" + getName() + " (" + getGrades() + ") -> \n");
+
+        for (int i = 0; i < myProfessions.size(); i++) {
+            if (myProfessions.get(i) != null)
+            str.append("Направление № " + (i + 1) + " - " + myProfessions.get(i).getFullName() + "\n");
         }
         if (!getFactor13().isBlank()) {
             str.append("Сданы оригиналы!" + "\n");

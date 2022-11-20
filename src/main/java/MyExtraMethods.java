@@ -12,7 +12,7 @@ public class MyExtraMethods {
     }
     public static List collectAbiturientsToProfMainWay(List<Abiturient> abiturientList, Profession professions) {
         return abiturientList.stream()
-                .filter((a) -> a.getFaculty1().equals(professions))
+                .filter((a) -> a.getMyProfessions(0).equals(professions))
                 .limit(professions.getPlaceLimit())
                 .collect(Collectors.toList());
     }
@@ -23,7 +23,7 @@ public class MyExtraMethods {
         //TODO ждем переработки класса Abiturient со списокм профессий а не по одной
         //TODO forEach для профессий нахер тут не нужон
         for (Profession professions : profession) {
-            if(abiturient.getFaculty1().equals(professions)) {
+            if(abiturient.getMyProfessions(0).equals(professions)) {
 
                 //Проверяем средний балл последнего и нашего нового
                 //TODO Неправильная структура условий, сейчас мы находим примерно ничего!
@@ -41,7 +41,7 @@ public class MyExtraMethods {
                     System.out.println(finalDistributionList.get(professions.getEnumIndex()));
                     return 1;
                 } else if (finalDistributionList.get(professions.getEnumIndex()).getLast().getGrades() > abiturient.getGrades()) {
-                    if (abiturient.getFaculty2() != null) {
+                    if (abiturient.getMyProfessions(1) != null) {
                         return 0;
                     } else {
                         return -1;

@@ -77,7 +77,7 @@ public class XlsxHandler {
         for (int i = 0; i < abiturientsFromSheet.size(); i++) {
             abiturientList.add(new Abiturient());
             abiturientList.get(i).setName(abiturientsFromSheet.get(i).get(0));
-            abiturientList.get(i).setFaculty1(adapterForProfession(abiturientsFromSheet.get(i).get(1)));
+            abiturientList.get(i).setMyProfessions(0, adapterForProfession(abiturientsFromSheet.get(i).get(1)));
 
             if (abiturientsFromSheet.get(i).get(abiturientsFromSheet.get(i).size() - 1).equals("1.0")) {
                 abiturientList.get(i).setGrades(Double.parseDouble(abiturientsFromSheet.get(i)
@@ -86,9 +86,9 @@ public class XlsxHandler {
                         .get(abiturientsFromSheet.get(i).size() - 1));
 
                 if (abiturientsFromSheet.get(i).size() > 4) {
-                    abiturientList.get(i).setFaculty2(adapterForProfession(abiturientsFromSheet.get(i).get(2)));
+                    abiturientList.get(i).setMyProfessions(1, adapterForProfession(abiturientsFromSheet.get(i).get(2)));
                     if (abiturientsFromSheet.get(i).size() > 5) {
-                        abiturientList.get(i).setFaculty3(adapterForProfession(abiturientsFromSheet.get(i).get(3)));
+                        abiturientList.get(i).setMyProfessions(2, adapterForProfession(abiturientsFromSheet.get(i).get(3)));
                     }
                 }
             } else {
@@ -96,9 +96,9 @@ public class XlsxHandler {
                         .get(abiturientsFromSheet.get(i).size() - 1)));
 
                 if (abiturientsFromSheet.get(i).size() > 3) {
-                    abiturientList.get(i).setFaculty2(adapterForProfession(abiturientsFromSheet.get(i).get(2)));
+                    abiturientList.get(i).setMyProfessions(1, adapterForProfession(abiturientsFromSheet.get(i).get(2)));
                     if (abiturientsFromSheet.get(i).size() > 4) {
-                        abiturientList.get(i).setFaculty3(adapterForProfession(abiturientsFromSheet.get(i).get(3)));
+                        abiturientList.get(i).setMyProfessions(2, adapterForProfession(abiturientsFromSheet.get(i).get(3)));
                     }
                 }
             }
