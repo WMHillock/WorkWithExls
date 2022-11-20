@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 public class Abiturient {
     private String name = "";
@@ -7,6 +9,8 @@ public class Abiturient {
     private double grades = 0.0;
     private String factor13 = "";
     public static int usersCount = 0;
+    //TODO Переделать Abiturient.class с профессиями в списке а не по одной
+    private List<Profession> myFacultets = new ArrayList<>(3);
 
     public String getName() {
         return name;

@@ -65,9 +65,9 @@ public class Main {
         Sheet sheet = book.getSheetAt(1);
 
         /*
-        Это наши 3 метода в одном, читаем, пишем в объекты, сортируем по баллу
+        Это наши 3 метода в одном, читаем, пишем в объекты, сортируем по баллу, присваиваем в очередь
          */
-        Deque<Abiturient> sortedAbiturientList = new LinkedList<>(MyExtraMethods.sortAbiturientsDeque(
+        Deque<Abiturient> sortedAbiturientList = new LinkedList<>(MyExtraMethods.sortAbiturientsList(
                 XlsxHandler.parseToAbiturient(XlsxHandler.readToList(sheet))));
 
         //Проверка парсинга по количеству правильных имен
