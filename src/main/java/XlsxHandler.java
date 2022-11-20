@@ -15,6 +15,7 @@ public class XlsxHandler {
         int i = 0;
         // for each цикл заполнения нашего хранилища parsedFromXlsInfoList
         //Проходим по очереди по рядам
+        //TODO Оптимизировать, сделать проверку на пустой ряд и скипать его.
         for (Row row : sheet) {
             //Создаем многомерный ArrayList
             parsedFromXlsInfoList.add(i, new ArrayList<>());
@@ -45,11 +46,10 @@ public class XlsxHandler {
             }
             i++;
         }
-        List<ArrayList> parsedAbiturientsListCorrected = parsedFromXlsInfoList.stream()
+        //Отрезаем пустой конец Xlsx листа и возвращаем список
+        return parsedFromXlsInfoList.stream()
                 .limit(elementsCounter(parsedFromXlsInfoList))
                 .collect(Collectors.toList());
-
-        return parsedAbiturientsListCorrected;
     }
     public static int elementsCounter(List<ArrayList<String>> parsedFromXlsInfoList) {
         int j = 0;

@@ -4,16 +4,15 @@ import java.util.List;
 import java.util.Objects;
 public class Abiturient {
     private String name = "";
-    private List<Profession> myProfessions = new ArrayList<>(Arrays.asList(null, null, null));
+    private List<Profession> myProfessions =
+            new ArrayList<>(Arrays.asList(null, null, null));
     private double grades = 0.0;
     private String factor13 = "";
     public static int usersCount = 0;
-    //TODO Переделать Abiturient.class с профессиями в списке а не по одной
 
     public Profession getMyProfessions(int indexOfProfession) {
         return myProfessions.get(indexOfProfession);
     }
-
     public void setMyProfessions(int indexOfProfession, Profession profession) {
         this.myProfessions.set(indexOfProfession, profession);
     }

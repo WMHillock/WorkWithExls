@@ -108,7 +108,8 @@ public class Main {
                     break;
 
                     case 2: {
-                        MyExtraMethods.distributionOfAbiturients(sortedAbiturientList);
+
+                        System.out.println(MyExtraMethods.distributionOfAbiturients(sortedAbiturientList));
                     }
                     break;
 

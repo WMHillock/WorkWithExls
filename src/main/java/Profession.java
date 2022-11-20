@@ -47,10 +47,8 @@ public enum Profession {
     private final String fullName;
     private final String professionCode;
     private final int placeLimit;
-
     private final int enumIndex;
 
-    public int getEnumIndex() { return enumIndex;}
     public String getFullName() {
         return fullName;
     }
@@ -58,6 +56,7 @@ public enum Profession {
         return professionCode;
     }
     public int getPlaceLimit() { return placeLimit; }
+    public int getEnumIndex() { return enumIndex;}
 
     Profession(String fullName, String professionCode, int placeLimit, int enumIndex) {
         this.fullName = fullName;
