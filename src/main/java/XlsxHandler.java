@@ -74,7 +74,9 @@ public class XlsxHandler {
     //TODO Нам нужен ObjectMapper?
     public static List<Abiturient> parseToAbiturient(List<ArrayList<String>> abiturientsFromSheet) {
         List<Abiturient> abiturientList = new LinkedList<>();
+
         for (int i = 0; i < abiturientsFromSheet.size(); i++) {
+
             abiturientList.add(new Abiturient());
             abiturientList.get(i).setName(abiturientsFromSheet.get(i).get(0));
             abiturientList.get(i).setMyProfessions(0, adapterForProfession(abiturientsFromSheet.get(i).get(1)));

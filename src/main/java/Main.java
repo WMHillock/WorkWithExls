@@ -102,29 +102,11 @@ public class Main {
                         + "4 - Завершить работу" + "\n");
 
                 switch (SCANNER.nextInt()) {
-                    case 1: {
-                        System.out.println(sortedAbiturientList.toString());
-                    }
-                    break;
-
-                    case 2: {
-
-                        System.out.println(MyExtraMethods.distributionOfAbiturients(sortedAbiturientList));
-                    }
-                    break;
-
-                    case 3: {
-                        XlsxHandler.uploadDataToXlsFile();
-                    }
-                    break;
-
-                    case 4: {
-                        SCANNER.close();
-                        break mainLoop;
-                    }
-                    default:
-                        System.out.println("SMTH gonna wrong! Reenter you choose");
-                    break;
+                    case 1 -> System.out.println(sortedAbiturientList.toString());
+                    case 2 -> System.out.println(MyExtraMethods.distributionOfAbiturients(sortedAbiturientList));
+                    case 3 -> XlsxHandler.uploadDataToXlsFile();
+                    case 4 -> {SCANNER.close(); break mainLoop;}
+                    default -> System.out.println("SMTH gonna wrong! Reenter you choose");
                 }
             }
         }
