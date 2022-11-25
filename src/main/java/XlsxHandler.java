@@ -2,8 +2,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,8 +24,8 @@ public class XlsxHandler {
             parsedFromXlsInfoList.add(i, new ArrayList<>());
             //Проходим по ячейкам
             for (Cell cell : row) {
-                //Осуществляем отрезание пустых значений
-                //Забираем даннче из ячеек, обязательно своим методом для каждого типа!
+                //Осуществляем отрезание пустых значений.
+                //Забираем данные из ячеек, обязательно своим методом для каждого типа!
                 switch (cell.getCellType()) {
                     case STRING:
                         parsedFromXlsInfoList.get(i).add(cell.getRichStringCellValue().getString());
@@ -108,8 +111,65 @@ public class XlsxHandler {
         return abiturientList;
     }
 
-    public static void uploadDataToXlsFile() {
-        //TODO процесс сохранения данных в файл
-        System.out.println("Мы слили в файл инфу!");
+    public static void uploadDataToXlsFile(List<Deque<Abiturient>> finalDistributionList) {
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        int i = 0;
+        int j = 0;
+
+        for (Deque<Abiturient> abiturientDeque : finalDistributionList) {
+            if(j < finalDistributionList.size() - 1 ) {
+                workbook.createSheet(abiturientDeque.getFirst().getMyProfessions(0).getProfessionCode());
+            } else {
+                workbook.createSheet("На проверку");
+            }
+            j++;
+
+            int rowNum = 0;
+            for (Abiturient abiturient : abiturientDeque) {
+                Row row = workbook.getSheetAt(i).createRow(rowNum++);
+
+                Cell cellName = row.createCell(0);
+                cellName.setCellValue(abiturient.getName());
+
+                Cell cellP1 = row.createCell(1);
+                cellP1.setCellValue(abiturient.getMyProfessions(0).getProfessionCode());
+
+                Cell cellP2 = row.createCell(2);
+                Cell cellP3 = row.createCell(3);
+                if(abiturient.getMyProfessions(1)  != null) {
+                    cellP2.setCellValue(abiturient.getMyProfessions(1).getProfessionCode());
+                    if(abiturient.getMyProfessions(2)  != null) {
+                        cellP3.setCellValue(abiturient.getMyProfessions(2).getProfessionCode());
+                    }
+                }
+
+                Cell cellGrade = row.createCell(4);
+                cellGrade.setCellValue(abiturient.getGrades());
+
+                Cell cellDocs = row.createCell(5);
+                if(!(abiturient.getFactor13().isBlank())) {
+                    cellDocs.setCellValue(abiturient.getFactor13());
+                }
+            }
+            i++;
+        }
+
+        try {
+            // Writing the workbook
+            FileOutputStream out = new FileOutputStream(
+                    "workResult.xlsx");
+            workbook.write(out);
+            out.close();
+
+            System.out.println("""
+                    ***********************************
+                    Мы залили в файл - workResult.xlsx
+                    результаты сортировки абитуриентов.
+                    ***********************************
+                    """);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

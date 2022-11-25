@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 public class Abiturient {
     private String name = "";
     private List<Profession> myProfessions =
@@ -39,24 +38,6 @@ public class Abiturient {
     }
 
     public Abiturient() { usersCount++; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Abiturient that = (Abiturient) o;
-        return Double.compare(that.grades, grades) == 0
-                && Objects.equals(name, that.name)
-                && Objects.equals(myProfessions.get(0), that.myProfessions.get(0))
-                && Objects.equals(myProfessions.get(1), that.myProfessions.get(1))
-                && Objects.equals(myProfessions.get(2), that.myProfessions.get(2))
-                && Objects.equals(factor13, that.factor13);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, grades, myProfessions.get(0), myProfessions.get(1), myProfessions.get(2), factor13);
-    }
 
     @Override
     public String toString() {

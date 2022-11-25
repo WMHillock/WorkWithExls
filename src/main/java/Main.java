@@ -1,21 +1,4 @@
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Scanner;
-
-public class Main {
-    public static final Scanner SCANNER = new Scanner(System.in);
-    public static void main(String[] args) throws IOException, InterruptedException {
-
-        //TODO Просмотреть еще раз логику распределения абитуриентов, есть косяк(Галстян)
-        //TODO переименовать нормально все переменные + 50%
-        //TODO сделать прием абитуриентов в JSON формате
-        /*
+/*
         Работа логики программы:
         1) Мы загружаем Xlsx файл
         2) Забираем оттуда абитуриентов, создаем для каждого свой объект
@@ -39,33 +22,36 @@ public class Main {
          5) Если наш абитуриент проходит в ту или иную группу мы добавялем его
          в соответствующий список
          5.1) После добавления абитуриента в список мы заново сортируем его
-            5.2) Если после добавления абитуриента список стал > 25
-                5.2.1.+) Мы достаем 26 абитуриента и переносим его в рабочий список на следующее
-                для проверки место (речь о верхушке списка), мы либо используем SortedSet\Map
-                или каждый раз сортируем оставшийся рабочий список.
-                5.2.1.-) Продолжаем работу с основным списком п.4
-         6) Возможно чтоб не идти по всему списку можно паралельно собирать информацию по минимальным
-         средним баллам во всех группах и когда первый абитуриент не пройдет во все группы (отдельная проверка
-         без учета выбраной для поступления группы) прекратить цикл распределения. Но тут надо глянуть
-         что дешевле по ресурсам каждого человека проверять на min балл (при этом собирая его с групп)
-         или пройтись по всем людям до конца.
-         7) Сохраняем результат в Коллекции (Set, Map ... ) для последующего ыввода в Xlsx файл
-         Нам скорей подходит SortedSet потому как мапа тут нахрен не упала, ключи вообще не нужны
-         мы не ищем определенный объект мы просто следуем по очередни по сортированному списку\множеству
-         и переносим элементы в другой список, периодически возвращая элементы обратно или списывая их окончательно
-         в отсев (еще один список)
-         */
+         6) После прохода по всему листу проходим по отсеву выбирая тех студентов кто выбирал более 1 профессии
+         и потенциально может пройти в какую-либо группу если сменит приоритет, но это уже для ручной работы
 
-        //Создаем поток входных данных черех файл
+         7) Сохраняем результат в Коллекции (Deque) для последующего вывода в Xlsx файл
+         */
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Scanner;
+
+public class Main {
+    public static final Scanner SCANNER = new Scanner(System.in);
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        //TODO сделать прием абитуриентов в JSON формате
+        //TODO сделать выгрузку абитуриентов в JSON формате
+        //TODO подключить базу данных и настроить работу с ней
+
+        //Создаем поток входных данных через файл
         FileInputStream inputStream = new FileInputStream("src/testBase.xlsx");
         //Создаем объект хранящий данные из xls, передаем поток с данными
         Workbook book = new XSSFWorkbook(inputStream);
         //Создаем объект представляющий страницу из нашего book
         Sheet sheet = book.getSheetAt(1);
 
-        /*
-        Это наши 3 метода в одном, читаем, пишем в объекты, сортируем по баллу, присваиваем в очередь
-         */
         Deque<Abiturient> sortedAbiturientList = new LinkedList<>(MyExtraMethods.sortAbiturientsList(
                 XlsxHandler.parseToAbiturient(XlsxHandler.readToList(sheet))));
 
@@ -75,19 +61,6 @@ public class Main {
                 .count() + " абитуриентов.\n");
 
         mainLoop(sortedAbiturientList);
-
-
-
-//        Profession[] myEnums = Profession.values();
-//        for( Profession numsE : myEnums) {
-//            List<Abiturient> filtredAbiturientList =
-//            MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, numsE);
-//            System.out.println(numsE + " \n" + filtredAbiturientList.toString());
-//        }
-
-//        List<Abiturient> filtredAbiturientList =
-//                MyExtraMethods.collectAbiturientsToProfMainWay(sortedAbiturientList, Profession.TECHMECH);
-//        System.out.println(filtredAbiturientList.toString());
     }
 
     public static void mainLoop(Deque<Abiturient> sortedAbiturientList) throws InterruptedException {
@@ -96,17 +69,20 @@ public class Main {
         {
             while (true) {
                 //TODO Менюшка
-                System.out.println("Выберите действие: " + "\n"
-                        + "1 - Просмотреть текущие списки" + "\n"
-                        + "2 - Провести распределение" + "\n"
-                        + "3 - Выгрузить данные в файл" + "\n"
-                        + "4 - Завершить работу" + "\n");
+                System.out.println("""
+                        
+                        Выберите действие:\s
+                        1 - Просмотреть текущие списки
+                        2 - Провести распределение
+                        3 - Выгрузить данные в файл
+                        4 - Завершить работу
+                        """);
 
                 switch (SCANNER.nextInt()) {
                     case 1 -> System.out.println(sortedAbiturientList.toString());
                     case 2 -> MyExtraMethods.distributionOfAbiturients(sortedAbiturientList);
-                    case 3 -> XlsxHandler.uploadDataToXlsFile();
-                    case 4 -> {SCANNER.close(); break mainLoop;}
+                    case 3 -> XlsxHandler.uploadDataToXlsFile(MyExtraMethods.distributionOfAbiturients(sortedAbiturientList));
+                    case 4 -> {System.out.println("Программа отключена");SCANNER.close(); break mainLoop;}
                     default -> System.out.println("Введите корректный номер операции!");
                 }
             }
