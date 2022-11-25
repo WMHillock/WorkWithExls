@@ -1,10 +1,9 @@
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -16,16 +15,9 @@ public class XlsxHandler {
     public static List readToList(Sheet sheet) {
         List<ArrayList<String>> parsedFromXlsInfoList = new ArrayList<>();
         int i = 0;
-        // for each цикл заполнения нашего хранилища parsedFromXlsInfoList
-        //Проходим по очереди по рядам
-        //TODO Оптимизировать, сделать проверку на пустой ряд и скипать его.
         for (Row row : sheet) {
-            //Создаем многомерный ArrayList
             parsedFromXlsInfoList.add(i, new ArrayList<>());
-            //Проходим по ячейкам
             for (Cell cell : row) {
-                //Осуществляем отрезание пустых значений.
-                //Забираем данные из ячеек, обязательно своим методом для каждого типа!
                 switch (cell.getCellType()) {
                     case STRING:
                         parsedFromXlsInfoList.get(i).add(cell.getRichStringCellValue().getString());
@@ -37,27 +29,21 @@ public class XlsxHandler {
                             parsedFromXlsInfoList.get(i).add(cell.getNumericCellValue() + "");
                         }
                         break;
-                    case BOOLEAN:
-                        parsedFromXlsInfoList.get(i).add(cell.getBooleanCellValue() + "");
-                        break;
-                    case FORMULA:
-                        parsedFromXlsInfoList.get(i).add(cell.getCellFormula() + "");
-                        break;
                     default:
                         parsedFromXlsInfoList.get(i).add(" ");
                 }
             }
             i++;
         }
-        //Отрезаем пустой конец Xlsx листа и возвращаем список
         return parsedFromXlsInfoList.stream()
                 .limit(elementsCounter(parsedFromXlsInfoList))
                 .collect(Collectors.toList());
     }
+
     public static int elementsCounter(List<ArrayList<String>> parsedFromXlsInfoList) {
         int j = 0;
-        for (int i = 0; i < parsedFromXlsInfoList.size(); i++) {
-            if (!parsedFromXlsInfoList.get(i).get(0).isBlank()) {
+        for (ArrayList<String> strings : parsedFromXlsInfoList) {
+            if (!strings.get(0).isBlank()) {
                 j++;
             }
         }
@@ -74,7 +60,7 @@ public class XlsxHandler {
         return null;
     }
 
-    //TODO Нам нужен ObjectMapper?
+    //TODO Нам нужен ObjectMapper? Думаю нет
     public static List<Abiturient> parseToAbiturient(List<ArrayList<String>> abiturientsFromSheet) {
         List<Abiturient> abiturientList = new LinkedList<>();
 
@@ -118,10 +104,10 @@ public class XlsxHandler {
         int j = 0;
 
         for (Deque<Abiturient> abiturientDeque : finalDistributionList) {
-            if(j < finalDistributionList.size() - 1 ) {
+            if (j < finalDistributionList.size() - 1) {
                 workbook.createSheet(abiturientDeque.getFirst().getMyProfessions(0).getProfessionCode());
             } else {
-                workbook.createSheet("На проверку");
+                workbook.createSheet("Резерв и спор");
             }
             j++;
 
@@ -137,9 +123,9 @@ public class XlsxHandler {
 
                 Cell cellP2 = row.createCell(2);
                 Cell cellP3 = row.createCell(3);
-                if(abiturient.getMyProfessions(1)  != null) {
+                if (abiturient.getMyProfessions(1) != null) {
                     cellP2.setCellValue(abiturient.getMyProfessions(1).getProfessionCode());
-                    if(abiturient.getMyProfessions(2)  != null) {
+                    if (abiturient.getMyProfessions(2) != null) {
                         cellP3.setCellValue(abiturient.getMyProfessions(2).getProfessionCode());
                     }
                 }
@@ -148,7 +134,7 @@ public class XlsxHandler {
                 cellGrade.setCellValue(abiturient.getGrades());
 
                 Cell cellDocs = row.createCell(5);
-                if(!(abiturient.getFactor13().isBlank())) {
+                if (!(abiturient.getFactor13().isBlank())) {
                     cellDocs.setCellValue(abiturient.getFactor13());
                 }
             }
@@ -163,13 +149,30 @@ public class XlsxHandler {
             out.close();
 
             System.out.println("""
-                    ***********************************
-                    Мы залили в файл - workResult.xlsx
-                    результаты сортировки абитуриентов.
-                    ***********************************
+                    \n************************************************
+                     Результаты сортировки абитуриентов успешно
+                     выгружены, найти их можно в файле:
+                     workResult.xlsx в корневой папке программы.
+                    ************************************************
                     """);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static Deque<Abiturient> uploadAbiturientsFromFileXls(String fileName) throws IOException {
+        //TODO переделать с exception FileNotFound
+        FileInputStream inputStream = new FileInputStream(fileName + ".xlsx");
+        Workbook book = new XSSFWorkbook(inputStream);
+        Sheet sheet = book.getSheetAt(0);
+
+        Deque<Abiturient> sortedAbiturientList = new LinkedList<>(MyExtraMethods.sortAbiturientsList(
+                XlsxHandler.parseToAbiturient(XlsxHandler.readToList(sheet))));
+
+        System.out.println("Загружено - " + sortedAbiturientList.stream()
+                .filter((a) -> !a.getName().isBlank())
+                .count() + " абитуриентов.\n");
+
+        return sortedAbiturientList;
     }
 }

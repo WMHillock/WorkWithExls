@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 public class Abiturient {
     private String name = "";
-    private List<Profession> myProfessions =
+    private final List<Profession> myProfessions =
             new ArrayList<>(Arrays.asList(null, null, null));
     private double grades = 0.0;
     private String factor13 = "";
@@ -43,11 +43,13 @@ public class Abiturient {
     public String toString() {
 
         StringBuilder str = new StringBuilder();
-        str.append("***" + "\n" + getName() + " (" + getGrades() + ") -> \n");
+        str.append("***" + "\n").append(getName()).append(" (")
+                .append(getGrades()).append(") -> \n");
 
         for (int i = 0; i < myProfessions.size(); i++) {
             if (myProfessions.get(i) != null)
-            str.append("Направление № " + (i + 1) + " - " + myProfessions.get(i).getFullName() + "\n");
+            str.append("Направление № ").append(i + 1).append(" - ")
+                    .append(myProfessions.get(i).getFullName()).append("\n");
         }
         if (!getFactor13().isBlank()) {
             str.append("Сданы оригиналы!" + "\n");
