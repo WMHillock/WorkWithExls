@@ -10,10 +10,9 @@ import java.util.Scanner;
 
 public class Main {
     public static final Scanner SCANNER = new Scanner(System.in);
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-        //TODO почистить код от лишнего и оптимизировать методы + 50%
-        //TODO доделать логику распределения
+        //TODO Просмотреть еще раз логику распределения абитуриентов, есть косяк(Галстян)
         //TODO переименовать нормально все переменные + 50%
         //TODO сделать прием абитуриентов в JSON формате
         /*
@@ -77,6 +76,8 @@ public class Main {
 
         mainLoop(sortedAbiturientList);
 
+
+
 //        Profession[] myEnums = Profession.values();
 //        for( Profession numsE : myEnums) {
 //            List<Abiturient> filtredAbiturientList =
@@ -89,7 +90,7 @@ public class Main {
 //        System.out.println(filtredAbiturientList.toString());
     }
 
-    public static void mainLoop(Deque<Abiturient> sortedAbiturientList) {
+    public static void mainLoop(Deque<Abiturient> sortedAbiturientList) throws InterruptedException {
 
         mainLoop:
         {
@@ -103,10 +104,10 @@ public class Main {
 
                 switch (SCANNER.nextInt()) {
                     case 1 -> System.out.println(sortedAbiturientList.toString());
-                    case 2 -> System.out.println(MyExtraMethods.distributionOfAbiturients(sortedAbiturientList));
+                    case 2 -> MyExtraMethods.distributionOfAbiturients(sortedAbiturientList);
                     case 3 -> XlsxHandler.uploadDataToXlsFile();
                     case 4 -> {SCANNER.close(); break mainLoop;}
-                    default -> System.out.println("SMTH gonna wrong! Reenter you choose");
+                    default -> System.out.println("Введите корректный номер операции!");
                 }
             }
         }

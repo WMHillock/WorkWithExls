@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 public class MyExtraMethods {
     //TODO каст это плохой вариант надо поссотреть как отсортировать Deque
@@ -17,48 +19,47 @@ public class MyExtraMethods {
     //TODO Метод в работе, пока все некорректно
     public static synchronized int abiturientHandler(List<Deque<Abiturient>> finalDistributionList,
                                         Deque<Abiturient> abiturientDeque, int i) {
-        assert abiturientDeque.peekFirst() != null;
-
-        //TODO Проблема в моей оптимизации XD Потому как переменные периодически становятся null
-        //TODO и ту для каждого метода тогда писать if хотя не сработает скорей всего
-        //TODO или возвращаемся назад к длинным цепочкам методов
+        separator();
         Integer indexOfDeque = abiturientDeque.peekFirst().getMyProfessions(i).getEnumIndex();
-        System.out.println("Это индекс - " + indexOfDeque);
-
         Integer groupLimitValue = abiturientDeque.peekFirst().getMyProfessions(i).getPlaceLimit();
-        System.out.println("Это групЛимит - " + groupLimitValue);
-
         double minimalGradeValueInThisGroup = 0.0;
         if(finalDistributionList.get(indexOfDeque).peekLast() != null) {
             minimalGradeValueInThisGroup = finalDistributionList.get(indexOfDeque).peekLast().getGrades();
         }
-        System.out.println("Это минималка в группе - " + minimalGradeValueInThisGroup);
-
         double abiturientGradeValue = abiturientDeque.peekFirst().getGrades();
-        System.out.println("Это значение самого абитуриента - " + abiturientGradeValue);
 
-                //TODO Неправильная структура условий, сейчас мы находим примерно ничего!
+        System.out.println("Индекс группы - " + indexOfDeque);
+        System.out.println("Лимит группы - " + groupLimitValue);
+        System.out.println("Минимальный балл в группе - " + minimalGradeValueInThisGroup);
+        System.out.println("Текущее количество людей в группе - " + finalDistributionList.get(indexOfDeque).size());
+        System.out.println(abiturientDeque.peekFirst().getName() + " - " + abiturientGradeValue + "\n"
+                            + abiturientDeque.peekFirst().getMyProfessions(0)  + ", "
+                + abiturientDeque.peekFirst().getMyProfessions(1) + ", "
+                + abiturientDeque.peekFirst().getMyProfessions(2));
+        separator();
+
                 if (finalDistributionList.get(indexOfDeque).size() < groupLimitValue) {
                     //Добавляем нового участника в очередь профессии
-                    finalDistributionList.get(indexOfDeque).add(abiturientDeque.pollFirst());
+                    finalDistributionList.get(indexOfDeque).offer(abiturientDeque.pollFirst());
+                    System.out.println("Без конкурса добавлен в - "
+                            + indexOfDeque);
                     //Заново сортируем очередь и переписываем значение ...
-                    if(finalDistributionList.get(indexOfDeque).size() >= groupLimitValue) {
                         finalDistributionList.set(indexOfDeque,
                                 finalDistributionList.get(indexOfDeque).stream()
                                         .sorted((a, b) -> Double.compare(b.getGrades(), a.getGrades()))
                                         .collect(Collectors.toCollection(LinkedList::new)));
-                    }
                     return 1;
-
+                //TODO Видимо удалить этот сегмент else if
                 } else if (finalDistributionList.get(indexOfDeque).size() >= groupLimitValue &&
                         minimalGradeValueInThisGroup < abiturientGradeValue) {
                     //Если у нового больше, то:
                     //Вынимаем выбывающего из очереди профессии
                     Abiturient tempAbiturient = finalDistributionList.get(indexOfDeque).pollLast();
+                    System.out.println("Вытащили абитуриента - " + tempAbiturient);
                     //Добавляем нового участника в очередь профессии
-                    finalDistributionList.get(indexOfDeque).add(abiturientDeque.pollFirst());
+                    finalDistributionList.get(indexOfDeque).offer(abiturientDeque.pollFirst());
                     //Вставляем в общую очередь нового абитуриента, на первое место для проверки
-                    abiturientDeque.addFirst(tempAbiturient);
+                    abiturientDeque.offerFirst(tempAbiturient);
                     //Заново сортируем очередь и переписываем значение ...
                     finalDistributionList.set(indexOfDeque,
                             finalDistributionList.get(indexOfDeque).stream()
@@ -67,12 +68,24 @@ public class MyExtraMethods {
                     return 1;
                 } else if (minimalGradeValueInThisGroup >= abiturientGradeValue) {
 
-                    if(abiturientDeque.getFirst().getMyProfessions(1) == null) {
+                    if (i == 0 && abiturientDeque.peekFirst().getMyProfessions(1) == null) {
                         abiturientDeque.removeFirst();
+                        System.out.println("Удален по признаку - отсутствует 2 приоритет");
+                        return 1;
                     }
-                    if(abiturientDeque.getFirst().getMyProfessions(2) == null) {
+                    if (i == 1 && abiturientDeque.peekFirst().getMyProfessions(2) == null) {
                         abiturientDeque.removeFirst();
+                        System.out.println("Удален по признаку - отсутствует 3 приоритет");
+                        return 1;
                     }
+                    if(i == 2 && minimalGradeValueInThisGroup >= abiturientGradeValue) {
+                        abiturientDeque.removeFirst();
+                        System.out.println("Удален по признаку не прошел по баллу в 3 приоритет");
+                        return 1;
+
+                    }
+                    System.out.println("Получен return 0 возврат к проверке направлений");
+
                     return 0;
                 } else {
                     System.out.println("Я хз как это произошло но ошибка в abiturientHandler, " +
@@ -81,44 +94,53 @@ public class MyExtraMethods {
                 }
     }
 
-    public static double minimalGrades(List<Deque<Abiturient>> finalDistributionList) {
-        double minValue = 5;
-        for (Deque<Abiturient> dequeue : finalDistributionList) {
-            if( !(dequeue.peekLast() == null) && minValue > dequeue.peekLast().getGrades()) {
-                minValue = dequeue.peekLast().getGrades();
-            } else  {
-                minValue = 0;
-            }
-        }
-        return minValue;
+    public static void separator() {
+        System.out.println("********************");
     }
 
-
-    public static List<Deque<Abiturient>> distributionOfAbiturients(Deque<Abiturient> sortedAbiturientList) {
-        Deque<Abiturient> abiturientDeque = new ArrayDeque<>(sortedAbiturientList);
+    public static synchronized List<Deque<Abiturient>> distributionOfAbiturients(Deque<Abiturient> sortedAbiturientList)
+            throws InterruptedException {
+        Deque<Abiturient> abiturientDeque = new ConcurrentLinkedDeque<>(sortedAbiturientList);
         //TODO вот тут и работаем с DEQUE
         Profession[] profession = Profession.values();
-        List<Deque<Abiturient>> finalDistributionList = new ArrayList<>();
-        for (Profession ignored : profession) {finalDistributionList.add(new LinkedList<>());}
+        List<Deque<Abiturient>> finalDistributionList = new CopyOnWriteArrayList<>();
+        for (Profession ignored : profession) {finalDistributionList.add(new ConcurrentLinkedDeque<>());}
 
         while (true) {
             //Условие окончания цикла
-            if (abiturientDeque.peekFirst().getGrades() >= minimalGrades(finalDistributionList)) {
-                int i = 0;
-                if(abiturientHandler(finalDistributionList, abiturientDeque, i) == 0) {
-                    i = 1;
-                    if(abiturientHandler(finalDistributionList, abiturientDeque, i) == 0) {
-                        i = 2;
-                        if(abiturientHandler(finalDistributionList, abiturientDeque, i) == 0) {
-                            break;
+            if (abiturientDeque.peekFirst() != null) {
+                //TODO Логика все еще порочна, выдает не вполне корректный результат
+                if(abiturientHandler(finalDistributionList, abiturientDeque, 0) == 0) {
+                    System.out.println("Проверили прошел ли по 1 приоритету");
+                    if(abiturientDeque.peekFirst().getMyProfessions(1) != null &&
+                            abiturientHandler(finalDistributionList, abiturientDeque, 1) == 0) {
+                            System.out.println("Проверили прошел ли по 2 приоритету");
+                        if(abiturientDeque.peekFirst().getMyProfessions(2) != null &&
+                                abiturientHandler(finalDistributionList, abiturientDeque, 2) == 0) {
+                                System.out.println("Проверили прошел ли по 3 приоритету");
+                        } else {
+                            System.out.println("Выход после 3 приоритета");
                         }
+                    } else {
+                        System.out.println("Выход после 2 приоритета");
                     }
+                } else {
+                    System.out.println("Выход после 1 приоритета");
                 }
+//                Thread.sleep(300);
+
             } else {
+                for (Deque<Abiturient> abDeq : finalDistributionList) {
+                    System.out.println(abDeq.peekFirst() != null ?
+                            abDeq.peekFirst().getMyProfessions(0) + "\n"
+                                    + "Людей в списке - " + abDeq.size()
+                                    + "\nМинимальный балл - " + abDeq.peekLast().getGrades()
+                            // + abDeq
+                            : "Формируем группу ...");
+                }
                 break;
             }
         }
         return finalDistributionList;
     }
-
 }
