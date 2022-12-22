@@ -22,16 +22,21 @@ public class MyExtraMethods {
         double minimalGradeValueInThisGroup = finalDistributionList.get(indexOfDeque).peekLast() != null ?
                 finalDistributionList.get(indexOfDeque).peekLast().getGrades() : 0.0;
         double abiturientGradeValue = abiturientDeque.peekFirst().getGrades();
+        StringBuilder str = new StringBuilder();
 
+        //TODO использование StringBuilder под вопросом
         separator();
-        System.out.println("Индекс группы - " + indexOfDeque + "\n"
-                + "Лимит группы - " + groupLimitValue + "\n"
-                + "Минимальный балл в группе - " + minimalGradeValueInThisGroup + "\n"
-                + "Текущее количество людей в группе - " + finalDistributionList.get(indexOfDeque).size() + "\n"
-                + abiturientDeque.peekFirst().getName() + " - " + abiturientGradeValue + "\n"
-                + abiturientDeque.peekFirst().getMyProfessions(0) + ", "
-                + abiturientDeque.peekFirst().getMyProfessions(1) + ", "
-                + abiturientDeque.peekFirst().getMyProfessions(2));
+        str.append("Индекс группы - ").append(indexOfDeque).append("\n");
+        str.append("Лимит группы - ").append(groupLimitValue).append("\n");
+        str.append("Минимальный балл в группе - ").append(minimalGradeValueInThisGroup).append("\n");
+        str.append("Текущее количество людей в группе - ").append(finalDistributionList.get(indexOfDeque).size()).append("\n");
+        str.append(abiturientDeque.peekFirst().getName()).append(" - ").append(abiturientGradeValue).append("\n");
+        for (int j = 0; j < 3; j++) {
+            if (abiturientDeque.peekFirst().getMyProfessions(j) != null) {
+                str.append(abiturientDeque.peekFirst().getMyProfessions(j)).append(" | ");
+            }
+        }
+        System.out.println(str);
         separator();
 
         if (finalDistributionList.get(indexOfDeque).size() < groupLimitValue) {
@@ -93,6 +98,7 @@ public class MyExtraMethods {
                     }
                 }
             } else {
+                System.out.println();
                 for(int i = 0; i < finalDistributionList.size(); i++) {
                     if(i < finalDistributionList.size() - 1) {
                         System.out.println(finalDistributionList.get(i).peekFirst().getMyProfessions(0)
